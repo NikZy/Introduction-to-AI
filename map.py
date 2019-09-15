@@ -229,3 +229,7 @@ class Map_Obj():
         # Show image
         image.show()
 
+if __name__ == "__main__":
+    map_obj = Map_Obj()
+    map_obj.print_map(map_obj.int_map)
+    #map_obj.show_map()
