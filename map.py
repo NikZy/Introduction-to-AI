@@ -9,6 +9,8 @@ class Map_Obj():
         self.start_pos, self.goal_pos, self.end_goal_pos, self.path_to_map = self.fill_critical_positions(task)
         self.int_map, self.str_map = self.read_map(self.path_to_map)
         self.tmp_cell_value = self.get_cell_value(self.goal_pos)
+        self.set_cell_value(self.start_pos, ' 2 ', str_map=False)
+        self.set_cell_value(self.goal_pos, ' 4 ', str_map=False)
         self.set_cell_value(self.start_pos, ' S ')
         self.set_cell_value(self.goal_pos, ' G ')
         self.tick_counter = 0
@@ -101,7 +103,7 @@ class Map_Obj():
         self.goal_pos = [pos[0], pos[1]]
         self.replace_map_values(tmp_pos, tmp_val, self.goal_pos)
 
-    def set_cell_value(self, pos, value, str_map = True):
+    def set_cell_value(self, pos, value, str_map =True):
         if str_map:
             self.str_map[pos[0], pos[1]] = value
         else:
@@ -231,5 +233,5 @@ class Map_Obj():
 
 if __name__ == "__main__":
     map_obj = Map_Obj()
-    map_obj.print_map(map_obj.int_map)
-    #map_obj.show_map()
+    map_obj.print_map(map_obj.str_map)
+    map_obj.show_map()
