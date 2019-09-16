@@ -2,7 +2,7 @@ from map import Map_Obj
 class Node ():
     # global state counter for generating unique ids
     state_counter = 0
-    def __init__(self, pos):
+    def __init__(self, pos, cost=1):
         # an object describing a state of the search process
         #self.state = state_counter
         #state_counter += 1
@@ -20,8 +20,15 @@ class Node ():
         self.parent = []
         # list of all successor nodes, whether or not this node is currently their best parent
         self.kids = []
+        # cost of moving to this node (1-4)
+        self.cost = cost
 
     # ---methods---
+    def char_to_cost(self):
+        """
+        Converts the given
+        """
+        pass
     def calc_h(self, goal):
         """
         calculates best case shortest path by
@@ -53,7 +60,7 @@ class Astar():
         self.Succ = []
 
         # generate initial start node
-        self.x = Node(map_obj.get_start_pos())
+        self.x = Node(map_obj.get_start_pos(), map_obj.get_cell_value(map_obj.get_start_pos()))
         # estimate length to goal
         self.x.calc_h(self.map_obj.get_end_goal_pos())
         # estimate total length to goal from start
@@ -171,7 +178,7 @@ class Astar():
                 propagate_path_improvements(child)
 if __name__ == "__main__":
     print("Start")
-    map_obj = Map_Obj(task=1)
+    map_obj = Map_Obj(task=3)
     astar = Astar(map_obj)
     print(astar.search())
     astar.map_obj.print_map(astar.map_obj.str_map)

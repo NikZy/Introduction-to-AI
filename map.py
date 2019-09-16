@@ -232,6 +232,6 @@ class Map_Obj():
         image.show()
 
 if __name__ == "__main__":
-    map_obj = Map_Obj()
-    map_obj.print_map(map_obj.str_map)
+    map_obj = Map_Obj(task=3)
+    map_obj.print_map(map_obj.int_map)
     map_obj.show_map()
