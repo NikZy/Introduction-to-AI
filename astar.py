@@ -26,7 +26,7 @@ class Node ():
     # ---methods---
     def char_to_cost(self):
         """
-        Converts the given
+        Converts the given cost
         """
         pass
     def calc_h(self, goal):
@@ -68,16 +68,24 @@ class Astar():
         self.push_and_sort(self.x)
 
     def paint_road(self, x):
+        """
+        when goal is reached, recursivily paint each parent with red
+        to see path taken
+        """
         print("parent of x: {}".format(x.parent))
         if (x.parent):
             pos = x.parent.pos
             print("pos: {}".format(pos))
-            self.map_obj.set_cell_value(pos, ' S ')
+            self.map_obj.set_cell_value(pos, ' P ')
             self.paint_road(x.parent)
 
         else:
             return True
     def search(self):
+        """
+        Main function of astar class.
+        initiates the Astar algorithm
+        """
         while True:
             if len(self.Open) == 0:
                 # failed to found a solution
@@ -85,7 +93,7 @@ class Astar():
 
             # pops first element i list
             self.x = self.Open.pop(0)
-            self.Closed.append(self.x)
+            self.Closed.append(self.x) # need more testing?
 
             # if x is a solution. Return Succ
             if (self.x.pos == self.map_obj.goal_pos):
@@ -108,7 +116,8 @@ class Astar():
                     self.attach_and_eval(s, self.x)
                     # insert s to open. sort open
                     self.push_and_sort(s)
-                elif (self.has_been_generated_before(s) and self.x.g + 1 < s.g):
+
+                elif (self.has_been_generated_before(s) and self.x.g + s.cost < s.g):
                     # if s exists and it's a cheaper path
                     self.attach_and_eval(s, self.x)
                     if (s in self.Closed):
@@ -142,7 +151,8 @@ class Astar():
                 #print(map_obj.get_cell_value(n))
                 if map_obj.get_cell_value([pos[0] + i, pos[1] + j]) != -1:
                     if ((i == 0 or j == 0) and ([j,i] != [0,0])):
-                        new_node = Node([pos[0] +i, pos[1] + j])
+                        cost = map_obj.get_cell_value(n)
+                        new_node = Node([pos[0] +i, pos[1] + j], cost)
                         self.Succ.append(new_node)
                         allowed_modes.append([pos[0] +i, pos[1] + j])
         return allowed_modes
@@ -157,11 +167,11 @@ class Astar():
         # p = parent(c)
         child.parent = parent
 
-        child.g = parent.g + 1
+        child.g = parent.g + child.cost
 
         # child.h = compute h(child)
 
-        child.f = child.g + child.g
+        child.f = child.g + child.h
 
 
     def propagate_path_improvements(self, parent):
@@ -169,16 +179,15 @@ class Astar():
         Recurses through children and possibly manyy other descendants.
         Some children may not have had parent as the best parent.
         """
-        cost = 1
         for child in parent.kids:
-            if child.g + cost < child.g:
+            if parent.g + child.cost < child.g:
                 child.parent = parent
-                child.g = p.g + cost
+                child.g = parent.g + child.cost
                 child.f = child.g + child.h
                 propagate_path_improvements(child)
 if __name__ == "__main__":
     print("Start")
-    map_obj = Map_Obj(task=3)
+    map_obj = Map_Obj(task=4)
     astar = Astar(map_obj)
     print(astar.search())
     astar.map_obj.print_map(astar.map_obj.str_map)

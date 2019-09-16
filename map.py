@@ -219,7 +219,7 @@ class Map_Obj():
 
         # Define what colors to give to different values of the string map (undefined values will remain yellow, this is
         # how the yellow path is painted)
-        colors = {' # ': (255, 0, 0), ' . ': (215, 215, 215), ' , ': (166, 166, 166), ' : ': (96, 96, 96),
+        colors = {' P ': (222, 50, 0), ' # ': (255, 0, 0), ' . ': (215, 215, 215), ' , ': (166, 166, 166), ' : ': (96, 96, 96),
                   ' ; ': (36, 36, 36), ' S ': (255, 0, 255), ' G ': (0, 128, 255)}
         # Go through image and set pixel color for every position
         for y in range(height):
@@ -232,6 +232,6 @@ class Map_Obj():
         image.show()
 
 if __name__ == "__main__":
-    map_obj = Map_Obj(task=3)
+    map_obj = Map_Obj(task=4)
     map_obj.print_map(map_obj.int_map)
     map_obj.show_map()
