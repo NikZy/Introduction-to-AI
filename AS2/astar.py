@@ -1,4 +1,7 @@
 from map import Map_Obj
+import argparse
+parser = argparse.ArgumentParser(description='Select task between 1-4')
+parser.add_argument('task', type=int)
 class Node ():
     # global state counter for generating unique ids
     state_counter = 0
@@ -186,8 +189,10 @@ class Astar():
                 child.f = child.g + child.h
                 propagate_path_improvements(child)
 if __name__ == "__main__":
+    args = parser.parse_args()
+    task = args.task
     print("Start")
-    map_obj = Map_Obj(task=4)
+    map_obj = Map_Obj(task=task)
     astar = Astar(map_obj)
     print(astar.search())
     astar.map_obj.print_map(astar.map_obj.str_map)

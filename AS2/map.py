@@ -6,6 +6,7 @@ from PIL import Image
 
 class Map_Obj():
     def __init__(self, task=1):
+        self.task = task
         self.start_pos, self.goal_pos, self.end_goal_pos, self.path_to_map = self.fill_critical_positions(task)
         self.int_map, self.str_map = self.read_map(self.path_to_map)
         self.tmp_cell_value = self.get_cell_value(self.goal_pos)
@@ -230,6 +231,7 @@ class Map_Obj():
                         pixels[x * scale + i, y * scale + j] = colors[map[y][x]]
         # Show image
         image.show()
+        image.save("map_{}_completed.png".format(self.task), "PNG")
 
 if __name__ == "__main__":
     map_obj = Map_Obj(task=4)
