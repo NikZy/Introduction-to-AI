@@ -4,7 +4,7 @@
 # educational purposes provided that (1) you do not distribute or publish
 # solutions, (2) you retain this notice, and (3) you provide clear
 # attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
-# 
+#
 # Attribution Information: The Pacman AI projects were developed at UC Berkeley.
 # The core projects and autograders were primarily created by John DeNero
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
@@ -110,7 +110,6 @@ class MinimaxAgent(MultiAgentSearchAgent):
     """
       Your minimax agent (question 2)
     """
-
     def getAction(self, gameState):
         """
           Returns the minimax action from the current gameState using self.depth
@@ -129,7 +128,19 @@ class MinimaxAgent(MultiAgentSearchAgent):
             Returns the total number of agents in the game
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        num_agents = gameState.getNumAgents()
+        for agent in range(num_agents):
+            legal_actions = gameState.getLegalActions(agent)
+
+            for action in legal_actions:
+                successor = gameState.generateSuccessor(agent, action)
+        print num_agents
+        print self
+
+        print "actions"
+        print legal_actions
+        print "evaluiation function"
+        print successor
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
