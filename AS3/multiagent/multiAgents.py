@@ -197,77 +197,85 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
     """
       Your minimax agent with alpha-beta pruning (question 3)
     """
-    def alphabeta(self,state,agent,depth,action,alpha,beta):
-        #print "alphabeta"," agent:",agent," depth:",depth," alpha:",alpha," beta:",beta
+    def minimax(self,state,agent,depth, alpha, beta):
+        #print "minimax"," agent:",agent," depth:",depth
         #print state
-        returnvalue = []
-        if agent == self.agentCount:
-            agent = self.index
-
+        returnvalue = 0
+        # loop back to agent 0 when all agents have chosen
+        agent = agent % self.agentCount
         if self.terminalTest(state,depth):
-            returnvalue = abVal(self.utility(state),action)
+            returnvalue = self.evaluationFunction(state)
+            #returnvalue =  self.utility(state)
         elif agent == self.index:
-            returnvalue = self.maxval(state,agent,depth,alpha,beta)
+            returnvalue = self.maxval(state,agent,depth, alpha, beta)
         else:
-            returnvalue = self.minval(state,agent,depth,alpha,beta)
-        #print "alphabeta returns:",returnvalue," agent:",agent
+            returnvalue = self.minval(state,agent,depth, alpha, beta)
+        #print "minimax returns:",returnvalue," agent:",agent
         return returnvalue
-    def maxval(self,state,agent,depth,alpha,beta):
-        v = abVal(float("-inf"),Directions.STOP)
+
+    def maxval(self,state,agent,depth, alpha, beta):
+        score = float("-inf")
         actions = state.getLegalActions(agent)
         if Directions.STOP in actions:
             actions.remove(Directions.STOP)
         for action in actions:
-            #print "max Action...",v
-            tempv = self.alphabeta(state.generateSuccessor(agent,action),agent+1,depth+1,action,alpha,beta)
-            tempv.action = action
-            v = max(v,tempv)
-            #print v,"end max action"
-            if v.value >= beta:
-                return v
-            alpha = max (alpha,v.value)
-        return v
-    def minval(self,state,agent,depth,alpha,beta):
-        v = abVal(float("inf"),Directions.STOP)
+            score = max(score,self.minimax(state.generateSuccessor(agent,action),agent+1,depth+1, alpha, beta))
+            if score >= beta:
+                return score
+            alpha = max(score, alpha)
+        return score
+    def minval(self,state,agent,depth, alpha, beta):
+        score = float("inf")
         for action in state.getLegalActions(agent):
-            #print "min Action...",v
-            tempv = self.alphabeta(state.generateSuccessor(agent,action),agent+1,depth+1,action,alpha,beta)
-            tempv.action = action
-            v = min(v,tempv)
-            #print v,"end min action"
-            if v.value <= alpha:
-                return v
-            beta = min(beta,v.value)
-        return v
+            score = min(score,self.minimax(state.generateSuccessor(agent,action),agent+1,depth+1, alpha, beta))
+            if score <= alpha:
+                return score
+            beta = min(score, beta)
+        return score
+
 
     def getAction(self, gameState):
         """
-          Returns the minimax action using self.depth and self.evaluationFunction
+          Returns the minimax action from the current gameState using self.depth
+          and self.evaluationFunction.
+
+          Here are some method calls that might be useful when implementing minimax.
+
+          gameState.getLegalActions(agentIndex):
+            Returns a list of legal actions for an agent
+            agentIndex=0 means Pacman, ghosts are >= 1
+
+          gameState.generateSuccessor(agentIndex, action):
+            Returns the successor game state after an agent takes an action
+
+          gameState.getNumAgents():
+            Returns the total number of agents in the game
         """
         "*** YOUR CODE HERE ***"
+        # Sets game state
         state = gameState
+        # gets agent count
         self.agentCount = state.getNumAgents()
+        # Keeps track of depth
         depth = 0
+        # keeps track of agent
         agent = self.index
+
+        # Keep track of the best action to do 
+        actionDict = {}
+        actions = state.getLegalActions(agent)
         alpha = float("-inf")
         beta = float("inf")
-        action = Directions.STOP
-        v = self.alphabeta(state,agent,depth,action,alpha,beta)
-        #print "SELECTING",v
-        return v.action
-class abVal():
-    def __init__(self,value,action):
-        self.action = action
-        self.value = value
-    def __repr__(self):
-        return self.action + ": " + str(self.value)
-    def __cmp__(self,other):
-        if self.value == other.value:
-            return 0
-        elif self.value > other.value:
-            return 1
-        else:
-            return -1
+
+        # Remove stop as action
+        if Directions.STOP in actions:
+            actions.remove(Directions.STOP)
+
+        for action in actions:
+            val = self.minimax(state.generateSuccessor(agent,action),agent+1,depth+1, alpha, beta)
+            actionDict[val] = action
+        return actionDict[max(actionDict)]
+
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
