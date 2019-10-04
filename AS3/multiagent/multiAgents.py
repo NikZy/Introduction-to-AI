@@ -105,11 +105,11 @@ class MultiAgentSearchAgent(Agent):
         self.index = 0 # Pacman is always agent index 0
         self.evaluationFunction = util.lookup(evalFn, globals())
         self.depth = int(depth)
-    def result(self,state,agent,action):
-        return state.generateSuccessor(agent,action)
+    #def result(self,state,agent,action):
+        #return state.generateSuccessor(agent,action)
 
-    def utility(self,state):
-        return self.evaluationFunction(state)
+    #def utility(self,state):
+    #    return self.evaluationFunction(state)
 
     def terminalTest(self,state,depth):
         if depth == (self.depth*self.agentCount) or state.isWin() or state.isLose():
@@ -124,31 +124,28 @@ class MinimaxAgent(MultiAgentSearchAgent):
     def minimax(self,state,agent,depth):
         #print "minimax"," agent:",agent," depth:",depth
         #print state
-        retval = 0
-        if agent == self.agentCount:
-            agent = self.index
+        returnvalue = 0
+        # loop back to agent 0 when all agents have chosen
+        agent = agent % self.agentCount
         if self.terminalTest(state,depth):
-            retval =  self.utility(state)
+            returnvalue = self.evaluationFunction(state)
+            #returnvalue =  self.utility(state)
         elif agent == self.index:
-            retval = self.maxval(state,agent,depth)
+            returnvalue = self.maxval(state,agent,depth)
         else:
-            retval = self.minval(state,agent,depth)
-        #print "minimax returns:",retval," agent:",agent
-        return retval
+            returnvalue = self.minval(state,agent,depth)
+        #print "minimax returns:",returnvalue," agent:",agent
+        return returnvalue
 
     def maxval(self,state,agent,depth):
-        v = float("-inf")
+        score = float("-inf")
         actions = state.getLegalActions(agent)
-        #actions.remove(Directions.STOP)
+        if Directions.STOP in actions:
+            actions.remove(Directions.STOP)
         for action in actions:
-            v = max(v,self.minimax(self.result(state,agent,action),agent+1,depth+1))
-        return v
+            score = max(score,self.minimax(state.generateSuccessor(agent,action),agent+1,depth+1))
+        return score
 
-    def minval(self,state,agent,depth):
-        v = float("inf")
-        for action in state.getLegalActions(agent):
-            v = min(v,self.minimax(self.result(state,agent,action),agent+1,depth+1))
-        return v
 
     def getAction(self, gameState):
         """
@@ -168,19 +165,33 @@ class MinimaxAgent(MultiAgentSearchAgent):
             Returns the total number of agents in the game
         """
         "*** YOUR CODE HERE ***"
+        # Sets game state
         state = gameState
+        # gets agent count
         self.agentCount = state.getNumAgents()
+        # Keeps track of depth
         depth = 0
+        # keeps track of agent
         agent = self.index
+
+        # Keep track of the best action to do 
         actionDict = {}
         actions = state.getLegalActions(agent)
-        #actions.remove(Directions.STOP)
+
+        # Remove stop as action
+        if Directions.STOP in actions:
+            actions.remove(Directions.STOP)
+
         for action in actions:
-            val = self.minimax(self.result(state,agent,action),agent+1,depth+1)
+            val = self.minimax(state.generateSuccessor(agent,action),agent+1,depth+1)
             actionDict[val] = action
-        #print actionDict,max(actionDict),min(actionDict),actionDict.keys(),max(actionDict.keys())
-        #print "SELECTED",max(actionDict)
         return actionDict[max(actionDict)]
+
+    def minval(self,state,agent,depth):
+        score = float("inf")
+        for action in state.getLegalActions(agent):
+            score = min(score,self.minimax(state.generateSuccessor(agent,action),agent+1,depth+1))
+        return score
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
@@ -189,24 +200,26 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
     def alphabeta(self,state,agent,depth,action,alpha,beta):
         #print "alphabeta"," agent:",agent," depth:",depth," alpha:",alpha," beta:",beta
         #print state
-        retval = []
+        returnvalue = []
         if agent == self.agentCount:
             agent = self.index
+
         if self.terminalTest(state,depth):
-            retval = abVal(self.utility(state),action)
+            returnvalue = abVal(self.utility(state),action)
         elif agent == self.index:
-            retval = self.maxval(state,agent,depth,alpha,beta)
+            returnvalue = self.maxval(state,agent,depth,alpha,beta)
         else:
-            retval = self.minval(state,agent,depth,alpha,beta)
-        #print "alphabeta returns:",retval," agent:",agent
-        return retval
+            returnvalue = self.minval(state,agent,depth,alpha,beta)
+        #print "alphabeta returns:",returnvalue," agent:",agent
+        return returnvalue
     def maxval(self,state,agent,depth,alpha,beta):
         v = abVal(float("-inf"),Directions.STOP)
         actions = state.getLegalActions(agent)
-        #actions.remove(Directions.STOP)
+        if Directions.STOP in actions:
+            actions.remove(Directions.STOP)
         for action in actions:
             #print "max Action...",v
-            tempv = self.alphabeta(self.result(state,agent,action),agent+1,depth+1,action,alpha,beta)
+            tempv = self.alphabeta(state.generateSuccessor(agent,action),agent+1,depth+1,action,alpha,beta)
             tempv.action = action
             v = max(v,tempv)
             #print v,"end max action"
@@ -218,7 +231,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         v = abVal(float("inf"),Directions.STOP)
         for action in state.getLegalActions(agent):
             #print "min Action...",v
-            tempv = self.alphabeta(self.result(state,agent,action),agent+1,depth+1,action,alpha,beta)
+            tempv = self.alphabeta(state.generateSuccessor(agent,action),agent+1,depth+1,action,alpha,beta)
             tempv.action = action
             v = min(v,tempv)
             #print v,"end min action"
