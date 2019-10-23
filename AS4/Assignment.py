@@ -293,7 +293,7 @@ def print_sudoku_solution(solution):
 
 if __name__ == "__main__":
     print("start")
-    csp = create_sudoku_csp("veryhard.txt")
+    csp = create_sudoku_csp("hard.txt")
     #print("Variables: ")
     #print(csp.variables)
     #print("Domains: ")
