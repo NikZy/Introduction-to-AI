@@ -114,16 +114,16 @@ class CSP:
         iterations of the loop.
         """
         self.backtrack_counter +=1
-        print("Backtrack_called: " + str(self.backtrack_counter))
+        #print("Backtrack_called: " + str(self.backtrack_counter))
         # Check if complete
         number_of_values = list(filter(lambda node: len(node[1]) > 1, assignment.items()))
         if (len(number_of_values) == 0): return assignment
 
         # var = select unnasigned variable
         var = self.select_unassigned_variable(assignment)
-        print("---NEW BACKTRACK RECURSION---")
-        print("var: {}".format(var))
-        print(assignment)
+       # print("---NEW BACKTRACK RECURSION---")
+       # print("var: {}".format(var))
+       # print(assignment)
 
         # loop over domain of var.
         for value in assignment[var]:
@@ -137,13 +137,11 @@ class CSP:
                 result = self.backtrack(copy_assignment)
 
                 # Return true if assignment complete
-                if result == True:
-                    print_sudoku_solution(result)
+                if result:
                     return result
             else:
                 self.failed_counter += 1
                 print("Failed: " + str(self.failed_counter))
-                break
 
         # No solution found
         return False
@@ -177,7 +175,6 @@ class CSP:
         """
         while len(queue) > 0:
             pair = queue.pop()
-            print(pair)
             if self.revise(assignment, pair[0], pair[1]):
                 # Incorrect solution. no more moves left
                 if len(assignment[pair[0]]) == 0:
@@ -205,8 +202,6 @@ class CSP:
         # for each x in i.domains
         #if len(assignment[j]) == 1:
             #print(assignment[j])
-        if i == '0-0' and j == '0-1' or i == '0-1' and j == '0-0':
-            print("test")
         for value in assignment[i]:
             # if no value y in j.domains satify constrains between i and j
             filtered = list(filter(lambda pair: pair[0] == value, constraints))
@@ -298,14 +293,14 @@ def print_sudoku_solution(solution):
 
 if __name__ == "__main__":
     print("start")
-    csp = create_sudoku_csp("easy.txt")
+    csp = create_sudoku_csp("veryhard.txt")
     #print("Variables: ")
     #print(csp.variables)
     #print("Domains: ")
     #print(csp.domains)
     #print( "Constraints: " )
     #print(csp.constraints)
-    csp.backtracking_search()
+    print_sudoku_solution(csp.backtracking_search())
     #print("All arcs:")
     #print(csp.get_all_arcs())
     #print(csp.get_all_neighboring_arcs())
